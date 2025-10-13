@@ -1,0 +1,96 @@
+name: "🚀 Feature"
+description: "Propose a new feature or enhancement to existing functionality"
+title: "[Area] Brief description of feature"
+labels: ["enhancement"]
+
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: "Provide a clear but concise summary of what needs to be done and why. Include context, motivation, and any relevant information."
+      placeholder: "What problem does this solve? Why does it matter?"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: "These should be specific and measurable; ALL must be met for this issue to be considered complete."
+      options:
+        - label: "Criterion 1"
+        - label: "Criterion 2"
+        - label: "Criterion 3"
+        - label: "All acceptance criteria verified in testing"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: definition_of_done
+    attributes:
+      label: Definition of Done
+      description: "Standardized qualities that MUST be completed before marking as Done."
+      options:
+        - label: "Code reviewed and approved by assigned reviewer"
+        - label: "Unit tests written and passing"
+        - label: "Integration tests passing (if applicable)"
+        - label: "Documentation updated (inline comments, README, wiki)"
+        - label: "CI pipeline passing"
+        - label: "Merged to main branch"
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_implementation
+    attributes:
+      label: Proposed implementation
+      description: "High-level approach, design decisions, or implementation notes. Include diagrams or pseudocode if relevant."
+      placeholder: "Outline the technical approach you plan to take."
+
+  - type: textarea
+    id: design_considerations
+    attributes:
+      label: Design considerations
+      placeholder: "Mention architectural impacts, trade-offs, risks, and assumptions."
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      placeholder: "List any alternative solutions and why they were not chosen."
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies
+      description: "List any blocking issues, external dependencies, or prerequisite tasks. Use #123 to reference issues/PRs."
+      placeholder: |
+        Blocked by: #...
+        Depends on: #...
+        Related to: #...
+
+  - type: textarea
+    id: testing
+    attributes:
+      label: Testing
+      description: "Describe how this feature will be tested."
+      placeholder: |
+        Unit tests:
+        - ...
+
+        Integration tests:
+        - ...
+
+        Manual testing:
+        - ...
+
+        Performance requirements:
+        - ...
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources
+      description: "Links to relevant documentation, diagrams, prior art, or any helpful references."
+      placeholder: "- ..."
