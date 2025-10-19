@@ -1,28 +1,76 @@
-name: "🚀 Feature"
+name: "🚀 Driverless Systems - Feature"
 description: "Propose a new feature or enhancement to existing functionality"
-title: "[Area] Brief description of feature"
+title: "Brief description of feature"
 labels: ["enhancement"]
 
 body:
+  # === WHAT and WHY ===
+  - type: markdown
+    attributes:
+      value: |
+        ## What and Why
+        Start with the essentials: what you want to build and why it matters.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      description: Which subsystem does this feature belong to?
+      options:
+        - Perception
+        - Localization & Mapping
+        - Planning
+        - Control
+        - Safety & Rule Compliance
+        - Infrastructure
+        - Testing
+        - Hardware
+        - Documentation
+    validations:
+      required: true
+
   - type: textarea
     id: description
     attributes:
       label: Description
-      description: "Provide a clear but concise summary of what needs to be done and why. Include context, motivation, and any relevant information."
-      placeholder: "What problem does this solve? Why does it matter?"
+      description: Clear summary of what needs to be done and why
+      placeholder: |
+        What: Implement RANSAC ground removal for LiDAR point clouds
+        
+        Why: Ground points interfere with clustering and cause false positives in cone detection. This preprocessing step will improve detection accuracy by 15-20%.
+        
+        Context: Currently using simple height threshold which fails on uneven terrain.
     validations:
       required: true
 
   - type: checkboxes
+    id: rule_compliance
+    attributes:
+      label: Rule Compliance
+      description: Formula Student rules consideration (check if applicable)
+      options:
+        - label: "Reviewed relevant FS rules for this feature"
+        - label: "No rule conflicts identified"
+        - label: "N/A - This feature doesn't interact with rule-regulated systems"
+
+  # === SUCCESS CRITERIA ===
+  - type: markdown
+    attributes:
+      value: |
+        ## Success Criteria
+        How will we know this is done and working correctly?
+
+  - type: textarea
     id: acceptance_criteria
     attributes:
       label: Acceptance Criteria
-      description: "These should be specific and measurable; ALL must be met for this issue to be considered complete."
-      options:
-        - label: "Criterion 1"
-        - label: "Criterion 2"
-        - label: "Criterion 3"
-        - label: "All acceptance criteria verified in testing"
+      description: Specific, measurable outcomes that must be achieved
+      placeholder: |
+        - [ ] Algorithm correctly identifies ground plane in point cloud
+        - [ ] Ground points filtered with <5% false negatives (cones removed)
+        - [ ] Processing time <50ms per frame on Jetson Nano
+        - [ ] Works on flat terrain, inclines, and bumps
+        - [ ] Visualized in RViz with ground/non-ground separation
     validations:
       required: true
 
@@ -30,67 +78,90 @@ body:
     id: definition_of_done
     attributes:
       label: Definition of Done
-      description: "Standardized qualities that MUST be completed before marking as Done."
+      description: Standard quality control (check all that apply when complete)
       options:
-        - label: "Code reviewed and approved by assigned reviewer"
-        - label: "Unit tests written and passing"
-        - label: "Integration tests passing (if applicable)"
-        - label: "Documentation updated (inline comments, README, wiki)"
+        - label: "Code reviewed and approved"
+        - label: "Tests written and passing"
+        - label: "Documentation updated"
         - label: "CI pipeline passing"
-        - label: "Merged to main branch"
-    validations:
-      required: true
+        - label: "Merged to main"
+
+  # === TECHNICAL APPROACH ===
+  - type: markdown
+    attributes:
+      value: |
+        ## Technical Approach
+        Optional: Share your conceptual implementation plan, design decisions, and risks.
 
   - type: textarea
-    id: proposed_implementation
+    id: implementation
     attributes:
-      label: Proposed implementation
-      description: "High-level approach, design decisions, or implementation notes. Include diagrams or pseudocode if relevant."
-      placeholder: "Outline the technical approach you plan to take."
+      label: Implementation Plan
+      description: High-level approach and design decisions (optional but helpful)
+      placeholder: |
+        Approach:
+        1. Downsample point cloud using voxel grid filter
+        2. Apply RANSAC with plane model
+        3. Set inlier threshold based on vehicle height
+        4. Publish separate topics for ground/non-ground
+        
+        Trade-offs:
+        - RANSAC vs. cloth simulation: RANSAC is faster, cloth is more robust
+        - Chose RANSAC for real-time performance requirements
 
   - type: textarea
-    id: design_considerations
+    id: risks
     attributes:
-      label: Design considerations
-      placeholder: "Mention architectural impacts, trade-offs, risks, and assumptions."
+      label: Risks and Mitigation
+      description: Potential failure modes, challenges, or risks (optional)
+      placeholder: |
+        Risk: May perform poorly on highly uneven terrain (bumps, potholes)
+        Mitigation: Tune inlier threshold adaptively based on terrain variance
+        
+        Risk: False positives when vehicle tilted on banked corners
+        Mitigation: Fuse with IMU data to compensate for vehicle attitude
+        
+        Risk: Performance degradation with increased point cloud density
+        Mitigation: Implement adaptive downsampling based on computational load
 
   - type: textarea
-    id: alternatives
+    id: testing
     attributes:
-      label: Alternatives considered
-      placeholder: "List any alternative solutions and why they were not chosen."
+      label: Testing Strategy
+      description: How will this be tested? (optional)
+      placeholder: |
+        Unit tests:
+        - Synthetic point clouds with known ground planes
+        - Edge cases: empty clouds, vertical surfaces
+        
+        Integration tests:
+        - FSDS test tracks: flat, inclined, rough terrain
+        - Verify cone detection rate improves after ground removal
+        
+        Performance:
+        - Benchmark processing time on target hardware
+
+  # === CONTEXT and DEPENDENCIES ===
+  - type: markdown
+    attributes:
+      value: |
+        ## Context and Dependencies
 
   - type: textarea
     id: dependencies
     attributes:
       label: Dependencies
-      description: "List any blocking issues, external dependencies, or prerequisite tasks. Use #123 to reference issues/PRs."
+      description: Blocking issues or prerequisite work (use '#' to link)
       placeholder: |
-        Blocked by: #...
-        Depends on: #...
-        Related to: #...
-
-  - type: textarea
-    id: testing
-    attributes:
-      label: Testing
-      description: "Describe how this feature will be tested."
-      placeholder: |
-        Unit tests:
-        - ...
-
-        Integration tests:
-        - ...
-
-        Manual testing:
-        - ...
-
-        Performance requirements:
-        - ...
+        Depends on: #42 (Sensor Configuration)
+        Related to: #89 (Cone Detection Pipeline)
 
   - type: textarea
     id: resources
     attributes:
       label: Resources
-      description: "Links to relevant documentation, diagrams, prior art, or any helpful references."
-      placeholder: "- ..."
+      description: Helpful links, papers, or references (optional)
+      placeholder: |
+        - PCL RANSAC docs: https://pcl.readthedocs.io/...
+        - Reference paper: "Ground Plane Estimation for Autonomous Racing"
+        - Similar implementation: https://github.com/.../ground_removal.cpp
