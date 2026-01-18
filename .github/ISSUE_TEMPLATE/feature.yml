@@ -4,12 +4,12 @@ title: "Brief description of feature"
 labels: ["enhancement"]
 
 body:
-  # === WHAT and WHY ===
+  # === WHAT ===
   - type: markdown
     attributes:
       value: |
-        ## What and Why
-        Start with the essentials: what you want to build and why it matters.
+        ## What
+        Clearly describe **what** is being proposed (no justification here).
 
   - type: dropdown
     id: area
@@ -30,16 +30,32 @@ body:
       required: true
 
   - type: textarea
-    id: description
+    id: what
     attributes:
-      label: Description
-      description: Clear summary of what needs to be done and why
+      label: What is being built
+      description: Concise, concrete description of the feature
       placeholder: |
-        What: Implement RANSAC ground removal for LiDAR point clouds
-        
-        Why: Ground points interfere with clustering and cause false positives in cone detection. This preprocessing step will improve detection accuracy by 15-20%.
-        
-        Context: Currently using simple height threshold which fails on uneven terrain.
+        Example:
+        Implement RANSAC-based ground removal for LiDAR point clouds
+    validations:
+      required: true
+
+  # === WHY ===
+  - type: markdown
+    attributes:
+      value: |
+        ## Why
+        Explain **why** this feature is needed and what problem it solves.
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Motivation
+      description: Why does this matter? What problem does it solve?
+      placeholder: |
+        Ground points interfere with clustering and cause false positives
+        in cone detection. Removing ground points earlier in the pipeline
+        is expected to improve detection accuracy by 15–20%.
     validations:
       required: true
 
@@ -51,7 +67,7 @@ body:
       options:
         - label: "Reviewed relevant FS rules for this feature"
         - label: "No rule conflicts identified"
-        - label: "N/A - This feature doesn't interact with rule-regulated systems"
+        - label: "N/A - This feature does not interact with rule-regulated systems"
 
   # === SUCCESS CRITERIA ===
   - type: markdown
@@ -64,13 +80,13 @@ body:
     id: acceptance_criteria
     attributes:
       label: Acceptance Criteria
-      description: Specific, measurable outcomes that must be achieved
+      description: Specific and measurable outcomes that must be achieved
       placeholder: |
-        - [ ] Algorithm correctly identifies ground plane in point cloud
-        - [ ] Ground points filtered with <5% false negatives (cones removed)
-        - [ ] Processing time <50ms per frame on Jetson Nano
-        - [ ] Works on flat terrain, inclines, and bumps
-        - [ ] Visualized in RViz with ground/non-ground separation
+        - [ ] Ground plane correctly identified in LiDAR point clouds
+        - [ ] <5% false negatives (cones incorrectly removed)
+        - [ ] Processing time <50 ms per frame on Jetson Nano
+        - [ ] Works on flat terrain, inclines and bumps
+        - [ ] Visualized in RViz (ground vs non-ground)
     validations:
       required: true
 
@@ -78,7 +94,7 @@ body:
     id: definition_of_done
     attributes:
       label: Definition of Done
-      description: Standard quality control (check all that apply when complete)
+      description: Standard quality requirements
       options:
         - label: "Code reviewed and approved"
         - label: "Tests written and passing"
@@ -91,67 +107,59 @@ body:
     attributes:
       value: |
         ## Technical Approach
-        Optional: Share your conceptual implementation plan, design decisions, and risks.
+        Optional: Proposed implementation details and design decisions.
 
   - type: textarea
     id: implementation
     attributes:
       label: Implementation Plan
-      description: High-level approach and design decisions (optional but helpful)
+      description: High-level approach (optional)
       placeholder: |
-        Approach:
-        1. Downsample point cloud using voxel grid filter
-        2. Apply RANSAC with plane model
-        3. Set inlier threshold based on vehicle height
-        4. Publish separate topics for ground/non-ground
-        
-        Trade-offs:
-        - RANSAC vs. cloth simulation: RANSAC is faster, cloth is more robust
-        - Chose RANSAC for real-time performance requirements
+        1. Downsample point cloud using voxel grid
+        2. Apply RANSAC plane model
+        3. Classify inliers as ground
+        4. Publish ground and non-ground topics
 
   - type: textarea
     id: risks
     attributes:
       label: Risks and Mitigation
-      description: Potential failure modes, challenges, or risks (optional)
+      description: Potential issues and how to handle them (optional)
       placeholder: |
-        Risk: May perform poorly on highly uneven terrain (bumps, potholes)
-        Mitigation: Tune inlier threshold adaptively based on terrain variance
-        
-        Risk: False positives when vehicle tilted on banked corners
-        Mitigation: Fuse with IMU data to compensate for vehicle attitude
-        
-        Risk: Performance degradation with increased point cloud density
-        Mitigation: Implement adaptive downsampling based on computational load
+        Risk: Uneven terrain reduces accuracy
+        Mitigation: Adaptive thresholding
 
   - type: textarea
     id: testing
     attributes:
       label: Testing Strategy
-      description: How will this be tested? (optional)
+      description: How this feature will be tested (optional)
       placeholder: |
-        Unit tests:
-        - Synthetic point clouds with known ground planes
-        - Edge cases: empty clouds, vertical surfaces
-        
-        Integration tests:
-        - FSDS test tracks: flat, inclined, rough terrain
-        - Verify cone detection rate improves after ground removal
-        
-        Performance:
-        - Benchmark processing time on target hardware
+        - Synthetic point clouds
+        - FSDS tracks
+        - Performance benchmarks on target hardware
 
-  # === CONTEXT and DEPENDENCIES ===
+  # === CONTEXT & DEPENDENCIES ===
   - type: markdown
     attributes:
       value: |
         ## Context and Dependencies
+        Background information and related work.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Current state, limitations or background
+      placeholder: |
+        Currently using a simple height threshold for ground removal
+        which fails on uneven terrain and banked corners.
 
   - type: textarea
     id: dependencies
     attributes:
       label: Dependencies
-      description: Blocking issues or prerequisite work (use '#' to link)
+      description: Blocking or related issues (use \# to link)
       placeholder: |
         Depends on: #42 (Sensor Configuration)
         Related to: #89 (Cone Detection Pipeline)
@@ -160,8 +168,7 @@ body:
     id: resources
     attributes:
       label: Resources
-      description: Helpful links, papers, or references (optional)
+      description: Links, papers, references (optional)
       placeholder: |
-        - PCL RANSAC docs: https://pcl.readthedocs.io/...
-        - Reference paper: "Ground Plane Estimation for Autonomous Racing"
-        - Similar implementation: https://github.com/.../ground_removal.cpp
+        - PCL RANSAC documentation
+        - Ground Plane Estimation for Autonomous Racing
