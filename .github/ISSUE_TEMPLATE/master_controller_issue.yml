@@ -1,0 +1,119 @@
+name: "Master Controller - Issue"
+description: "Bugs, features, rule compliance, hardware mismatches etc."
+title: "Master Controller Issue"
+labels: []
+
+body:
+  # WHAT DOES IT CURRENTLY DO?
+  - type: markdown
+    attributes:
+      value: |
+        ## What does it currently do?
+        Show the actual behavior. Step through what happens and not just "it is broken" but what specifically occurs. If it is unimplemented, show what is there (or is not).
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Subsystem
+      description: What in the codebase is this related to?
+      options:
+        - State Machine (app_main)
+        - Inverter Control
+        - CAN
+        - Error handling
+        - Analog (ADC, torque, brake, steering)
+        - BMS
+        - Telemetry
+        - GPIO (pin config)
+        - Controller (torque vectoring)
+        - Multiple / Cross-cutting (describe this in the Context section)
+    validations:
+      required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current behavior
+      description: |
+        Paste the code, name the file and function.
+        Write it so someone unfamiliar with this part of the codebase can follow along.
+      placeholder: |
+        An actual example from the repository in inverterControlTask.c, specifically the inverterSubStateSwitchON() method at line 132-133:
+
+        gInvLVC[statemachine->id].setpoints1.TorqueLimitPositiv = 0;
+        gInvLVC[statemachine->id].setpoints1.TorqueLimitPositiv = 0; // duplicate
+
+        TorqueLimitNegativ is never zeroed during the switch-on sequence.
+    validations:
+      required: true
+
+  # WHAT SHOULD IT DO?
+  - type: markdown
+    attributes:
+      value: |
+        ## What should it do?
+        Be specific. What triggers this? What comes out? What are the timing requirements or thresholds?
+
+        If a rule or datasheet defines the correct behavior, pull out the relevant line - do not just link a 100-page PDF.
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected behavior
+      placeholder: |
+        Line 133 should zero TorqueLimitNegativ, not TorqueLimitPositiv again:
+
+        gInvLVC[statemachine->id].setpoints1.TorqueLimitNegativ = 0;
+
+        AMK inverters apply whatever limits they receive. Both limits must
+        be explicitly zeroed before the enable sequence proceeds.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: rule_compliance
+    attributes:
+      label: FS Rules
+      description: Check what applies
+      options:
+        - label: "Relevant FS rule identified (cite in context below)"
+        - label: "No relevant rule"
+
+  # CONTEXT
+  - type: markdown
+    attributes:
+      value: |
+        ## Context
+        Why does this matter? What breaks if we leave it? What else does this touch?
+
+        Flag any risks - could fixing this break something else?
+
+        This section is for the person reading this in six months trying to understand why the change was made. Write it for them.
+
+        I know this may seem quite extensive and could introduce unnecessary overhead. Please use your own judgment to decide whether it is important or necessary!
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      placeholder: |
+        If the previous drive session set a regen torque limit and the car
+        power-cycles without a full RAM clear, the inverter starts up with
+        a non-zero negative torque limit. Could cause unexpected braking
+        forces on the first enable after restart.
+
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Dependencies / related issues
+      description: Use # to link. Or else just Leave empty.
+      placeholder: |
+        Depends on: #XX
+        Related to: #XX
+
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Datasheets, schematics, FS rules (optional)
+      placeholder:
